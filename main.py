@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-======== LAMMPS Logs Calculator ===========
+======== PTd Calculator ===========
 
-Version: 0.2(alfa) optimized
-
-Created on Mon Sep 30 22:24:44 2024
-Last changes: 
+Version: 0.8(alfa)
+Created on Mon 30.09.2024 at 22:24:44
+Last changes: Thi 22.11.2024
 @author: Nikita Sozykin (nikita.sozykin@mail.ru)
 
+This is the main file that contains UI and some data manipulation methods, like polyfitting,
+roots and chemical potential calculations. 
 """
 
 
