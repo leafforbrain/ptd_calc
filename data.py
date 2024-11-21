@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Oct  2 00:43:43 2024
+======== DataFile(PTd) supporting class ===========
 
-@author: nikit
+Version: 0.8(alfa)
+Created on Wed 2.10.2024 at 00:43:43
+Last changes: Thi 22.11.2024
+@author: Nikita Sozykin (nikita.sozykin@mail.ru)
+
+This file includes general data manipulation methods such as: opening, parsing, pulling info,
+searching for isotherms, etc. Test example in the footer comments. 
 """
 import statistics as stat, numpy as np
 from table import Table
