@@ -17,7 +17,8 @@ from data import DataFile, Table
 
 
 # Design
-import sys, numpy as np
+import sys 
+import numpy as np
 from PyQt5 import QtWidgets
 from timer import Timer
 import GUI
