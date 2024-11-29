@@ -13,7 +13,7 @@ class Data():
     
     pfile: TypeAlias = list[str]
     header: TypeAlias = list[str]
-    table: TypeAlias = list[header, np.array]
+    table: TypeAlias = list[list[str], np.ndarray]
     
     SOURCE_PATH = None
     VERSION = None
@@ -52,18 +52,15 @@ class Data():
             info = ' '.join([i for i in file[0].split() if "\"" not in i])
             return info
 
-    def collect_table(self, file: pfile, version: float) -> np.array:
+    def create_table(self, file: pfile, version: float) -> np.ndarray:
         if version == 1:
             header = file[0].split("\"")[:-1]
             header = [i.strip().rstrip() for i in header if i.strip().rstrip() != ""]
             cutted_file = [i.split() for i in file[1:]]
+            cutted_file = [[float(i[j]) for j in range(len(i))] for i in cutted_file]
+            table =  np.array(cutted_file)
             
-            for i,val in enumerate(cutted_file):
-                for j in range(len(val)):
-                    cutted_file[i][j] = float(val[j])
-                    
-            table = [header, np.array(cutted_file)]
-            return table
+            return [header, table]
         
         else:   return "Not implemented yet. Coming soon!"
     
@@ -73,52 +70,50 @@ class Data():
         __parsed = Utils.parse(file)
         self.VERSION = self.define_ver(__parsed)
         self.INFO = self.collect_info(__parsed, self.VERSION)
-        self.TABLE = self.collect_table(__parsed, self.VERSION)
+        self.TABLE = self.create_table(__parsed, self.VERSION)
 
     def define_used_T(self, table: table, trashhold: float = 3) -> list[float]:
-        print(table[1])
-        print("")
-        sorted_T = table[1][table[1][:, table[0].index("T/C")].argsort()]
-        print(table[1])
-        curr_T = sorted_T[0:2]
+        sorted_Table = table[1][table[1][:, table[0].index('T/C')].argsort()]
+        temperatures = sorted_Table[:,table[0].index('T/C')].tolist()
+
+        curr_T = temperatures[0:2]
         used_T = []
-        
-        while True:
+        while True:         # <-- maybe lateeeer refactor
             try:
-                for i in range(len(sorted_T)):
-                    if abs(sorted_T[i]-stat.mean(curr_T))/stat.mean(curr_T)*100 < trashhold:
-                        curr_T.append(sorted_T[i])
-                sorted_T = [k for k in sorted_T if k not in curr_T]
+                for i in range(len(temperatures)):
+                    if abs(temperatures[i]-stat.mean(curr_T))/stat.mean(curr_T)*100 < trashhold:
+                        curr_T.append(temperatures[i])
+                temperatures = [k for k in temperatures if k not in curr_T]
                 used_T.append(round(stat.mean(curr_T),-1))
-                curr_T = sorted_T[0:2]
+                curr_T = temperatures[0:2]
             except: break
         return used_T
 
-    def search_isotherms(self, trashhold):
-        # Creating new array with isotherms:
-        if self.used_T == []:
-            self.define_used_T(3)
-        else: None
+    def find_isotherms(self, table: table, used_T: list[float], trashhold: float =3) -> np.ndarray:
+        isotherms = np.ndarray(shape=(len(table[0]),len(table[1][0]),len(used_T)))
         
-        array = np.array(object, dtype=len(self.table[0].index("T/C")))
+        print(isotherms)
+
         for i in range(len(array)):
             array[i.append(self.used_T[i])]
-        
+
         # if self.version == "v1":
         #     for k in self.used_T:
         #         for i in self.table[1][self.table[0].index("T/C")]:
         #             if abs(i-k)/k*100 < trashhold:
         #                 array.[self.used_T.index(k)].append(k, self.table[1][self.table[1].index()])
     
-        for i,val1 in enumerate(self.used_T):
+        for i,val1 in enumerate(used_T):
             array[i].append(val1)
             for k,val2 in enumerate(self.table[1]):
                 if abs(val2[self.table[0].index("T/C")]-val1)/val1*100 < trashhold:
                     array[i].append(val2)
         self.isotherms = array
+        np.stac
                         
 data = Data()
-data.open_file('.\\Example Data\\YSr2Cu175Fe125O7-isocon[750]edited.dat', mode='isotherm')
+data.open_file('.\\Example Data\\YSr2Cu175Fe125O7-isocon[750]edited.dat', mode='isodelta')
 data.USED_T = data.define_used_T(data.TABLE)
+data.find_isotherms(data.TABLE, data.USED_T)
 print(data.USED_T)
 
