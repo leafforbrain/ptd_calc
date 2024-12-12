@@ -21,7 +21,7 @@ class Data():
     MODE = None
     TABLE = None
     USED_T = None
-    isotherms = None
+    ISOTHERMS = None
     
     
     def __init__(self):
@@ -40,6 +40,7 @@ class Data():
             except: 
                 self.VERSION = 'undefined'
                 raise ValueError
+            
 
     def set_spath(self, path: str) -> None:
         self.SOURCE_PATH = path
@@ -89,31 +90,26 @@ class Data():
             except: break
         return used_T
 
-    def find_isotherms(self, table: table, used_T: list[float], trashhold: float =3) -> np.ndarray:
-        isotherms = np.ndarray(shape=(len(table[0]),len(table[1][0]),len(used_T)))
-        
-        print(isotherms)
-
-        for i in range(len(array)):
-            array[i.append(self.used_T[i])]
-
-        # if self.version == "v1":
-        #     for k in self.used_T:
-        #         for i in self.table[1][self.table[0].index("T/C")]:
-        #             if abs(i-k)/k*100 < trashhold:
-        #                 array.[self.used_T.index(k)].append(k, self.table[1][self.table[1].index()])
+    def find_isotherms(self, table: table, used_T: list[float], trashhold: float = 3, version: float = None) -> np.ndarray:
+        isotherms = []    
+        if version == 1.0:
+            print(used_T)
+            for k in used_T:
+                columns = [i for i,val in enumerate(table[1][:, table[0].index("T/C")]) if abs(val-k)/k*100 < trashhold]
+                isotherms.append(table[1][np.array(columns)])
+        elif version == 'undefined':
+            print('ERROR: Version undefined!')
+        return isotherms
     
-        for i,val1 in enumerate(used_T):
-            array[i].append(val1)
-            for k,val2 in enumerate(self.table[1]):
-                if abs(val2[self.table[0].index("T/C")]-val1)/val1*100 < trashhold:
-                    array[i].append(val2)
-        self.isotherms = array
-        np.stac
+    def calc_Mu(self, isotherms: list[np.ndarray], contents_range: list, mode: str) -> np.ndarray:
+           pass
+    
+
                         
-data = Data()
-data.open_file('.\\Example Data\\YSr2Cu175Fe125O7-isocon[750]edited.dat', mode='isodelta')
-data.USED_T = data.define_used_T(data.TABLE)
-data.find_isotherms(data.TABLE, data.USED_T)
-print(data.USED_T)
+#data = Data()
+#data.open_file('.\\Example Data\\YSr2Cu175Fe125O7-isocon.dat', mode='isodelta')
+#data.open_file('.\\Example Data\\x_Ca3Co4O9.dat', mode='isotherm')
+#data.USED_T = data.define_used_T(data.TABLE)
+#data.find_isotherms(data.TABLE, data.USED_T, 1.0)
+#print(data.USED_T)
 
